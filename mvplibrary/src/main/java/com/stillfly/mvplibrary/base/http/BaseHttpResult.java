@@ -3,9 +3,18 @@ package com.stillfly.mvplibrary.base.http;
 import com.google.gson.annotations.SerializedName;
 
 public class BaseHttpResult<T> {
+    /**
+     * 返回的 code ，根据 code API 返回情况
+     */
     private int code;
+    /**
+     * message 信息
+     */
     @SerializedName("msg")
     private String message;
+    /**
+     * 返回的数据
+     */
     private T data;
 
     public int getCode() {

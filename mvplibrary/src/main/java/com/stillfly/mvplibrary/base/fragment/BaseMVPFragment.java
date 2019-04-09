@@ -1,4 +1,4 @@
-package com.stillfly.mvplibrary.base.activity;
+package com.stillfly.mvplibrary.base.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,22 +6,22 @@ import android.support.annotation.Nullable;
 import com.stillfly.mvplibrary.base.mvp.IPresenter;
 import com.stillfly.mvplibrary.base.mvp.IView;
 
-public abstract class BaseRxActivity<P extends IPresenter, V extends IView> extends BaseActivity implements IView {
+public abstract class BaseMVPFragment<P extends IPresenter, V extends IView> extends BaseFragment implements IView {
 
     protected P mPresenter;
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mPresenter = createPresenter();
         if (mPresenter != null) {
             mPresenter.attachView(this);
         }
-        super.onCreate(savedInstanceState);
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         if (mPresenter != null) {
             mPresenter.onDetached();

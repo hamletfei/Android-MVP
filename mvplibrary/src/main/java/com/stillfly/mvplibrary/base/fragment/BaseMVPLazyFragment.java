@@ -3,7 +3,7 @@ package com.stillfly.mvplibrary.base.fragment;
 import com.stillfly.mvplibrary.base.mvp.IPresenter;
 import com.stillfly.mvplibrary.base.mvp.IView;
 
-public abstract class BaseRxLazyFragment<P extends IPresenter, V extends IView> extends BaseRxFragment<P, V> {
+public abstract class BaseMVPLazyFragment<P extends IPresenter, V extends IView> extends BaseMVPFragment<P, V> {
 
     /**
      * 是否可见

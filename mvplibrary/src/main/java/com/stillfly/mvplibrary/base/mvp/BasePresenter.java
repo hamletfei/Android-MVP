@@ -2,26 +2,36 @@ package com.stillfly.mvplibrary.base.mvp;
 
 import java.lang.ref.WeakReference;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 
-public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
+public abstract class BasePresenter<V extends IView, M extends IModel> implements IPresenter<V, M> {
+
 
     /**
      * 绑定的 view
-     * 设置弱引用，防止内存泄露
      */
     private WeakReference<V> mAttachedView;
 
+    /**
+     * model
+     */
+    private M mModel;
+
     private CompositeDisposable mCompositeDisposable;
 
+    public BasePresenter() {
+        mModel = getModel();
+    }
+
+    /**
+     * 绑定 view
+     * 调用时机为 view 层的 onCreate()
+     * 设置弱引用，防止内存泄漏
+     */
     @Override
     public void attachView(V view) {
-        mAttachedView = new WeakReference<>(view);
+        mAttachedView = new WeakReference<V>(view);
     }
 
     @Override
@@ -30,6 +40,13 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
             mAttachedView.clear();
             mAttachedView = null;
         }
+
+    }
+
+    @Override
+    public void onDetached() {
+        detachView();
+        mModel = null;
         clearSubscribe();
     }
 
@@ -46,26 +63,16 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
      * @return
      */
     public IView getAttachedView() {
-        if (mAttachedView != null) {
-            return mAttachedView.get();
-        }
-        return null;
+        return mAttachedView.get();
     }
 
-    @Override
-    public <T> void addSubscribe(Observable<T> observable, DisposableObserver<T> observer) {
-        addSubscribe(observer);
-        observable.observeOn(Schedulers.newThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer);
-    }
 
     @Override
-    public <T> void addSubscribe(DisposableObserver<T> observer) {
+    public void addSubscribe(Disposable disposable) {
         if (mCompositeDisposable == null) {
             mCompositeDisposable = new CompositeDisposable();
         }
-        mCompositeDisposable.add(observer);
+        mCompositeDisposable.add(disposable);
     }
 
     @Override
@@ -83,4 +90,6 @@ public abstract class BasePresenter<V extends IView> implements IPresenter<V> {
         }
         mCompositeDisposable.remove(disposable);
     }
+
+    protected abstract M getModel();
 }
